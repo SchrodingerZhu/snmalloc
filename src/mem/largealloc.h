@@ -217,11 +217,11 @@ namespace snmalloc
      * Primitive allocator for structure that are required before
      * the allocator can be running.
      */
-    template<typename T, size_t alignment, typename... Args>
-    T* alloc_chunk(Args&&... args)
+    template<size_t tsize, size_t alignment>
+    void* alloc_chunk_untyped()
     {
       // Cache line align
-      size_t size = bits::align_up(sizeof(T), 64);
+      size_t size = bits::align_up(tsize, 64);
 
       void* p;
       {
@@ -261,6 +261,17 @@ namespace snmalloc
       PAL::template notify_using<NoZero>(
         page_start, static_cast<size_t>(page_end - page_start));
 
+      return p;
+    }
+
+    /**
+     * Primitive allocator for structure that are required before
+     * the allocator can be running.
+     */
+    template<typename T, size_t alignment, typename... Args>
+    T* alloc_chunk(Args&&... args)
+    {
+      auto p = alloc_chunk_untyped<sizeof(T), alignment>();
       return new (p) T(std::forward<Args...>(args)...);
     }
 
