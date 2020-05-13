@@ -219,4 +219,4 @@ namespace snmalloc
      */
     ArrayT array;
   };
-}
+} // namespace snmalloc
