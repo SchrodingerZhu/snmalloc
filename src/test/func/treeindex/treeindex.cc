@@ -1,5 +1,5 @@
-#include <ds/treeindex.h>
 #include <ds/bits.h>
+#include <ds/treeindex.h>
 #include <iostream>
 #include <pal/pal.h>
 #include <test/setup.h>
@@ -93,10 +93,8 @@ void print_tree_shape(int level = 0)
     std::cout << "Node ";
   }
 
-  std::cout << "entries: "
-    << T::entries 
-    << "  " << (void*)T::original()
-    << std::endl;
+  std::cout << "entries: " << T::entries << "  " << (void*)T::original()
+            << std::endl;
 
   if constexpr (!T::is_leaf)
   {

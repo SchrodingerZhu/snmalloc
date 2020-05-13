@@ -143,7 +143,8 @@ namespace snmalloc
     void* page_for_address(uintptr_t p)
     {
       SNMALLOC_ASSERT(
-         (reinterpret_cast<uintptr_t>(tree_index.get_addr(0)) & (OS_PAGE_SIZE - 1)) == 0);
+        (reinterpret_cast<uintptr_t>(tree_index.get_addr(0)) &
+         (OS_PAGE_SIZE - 1)) == 0);
       return reinterpret_cast<void*>(
         reinterpret_cast<uintptr_t>(tree_index.get_addr(p >> SHIFT)) &
         ~(OS_PAGE_SIZE - 1));

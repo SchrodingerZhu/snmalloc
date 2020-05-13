@@ -1,7 +1,7 @@
 #include "../aal/aal.h"
 
-#include <atomic>
 #include <array>
+#include <atomic>
 
 namespace snmalloc
 {
@@ -133,10 +133,8 @@ namespace snmalloc
       }
       else
       {
-        typename SubT::ArrayT* sub_array = 
-          array[index / sub_entries]
-          .load(std::memory_order_relaxed)
-          .value;
+        typename SubT::ArrayT* sub_array =
+          array[index / sub_entries].load(std::memory_order_relaxed).value;
         return SubT::get(*sub_array, index % sub_entries);
       }
     }
@@ -203,9 +201,8 @@ namespace snmalloc
           Aal::pause();
         }
 
-        auto sub_array = array[index / sub_entries]
-          .load(std::memory_order_relaxed)
-          .value;
+        auto sub_array =
+          array[index / sub_entries].load(std::memory_order_relaxed).value;
         return SubT::get_addr(*sub_array, index % sub_entries);
       }
     }
