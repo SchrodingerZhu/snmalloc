@@ -82,20 +82,24 @@ void print_tree_shape(int level = 0)
   if constexpr (T::is_leaf)
   {
     UNUSED(level);
-    std::cout << "Leaf entries: ";
-    std::cout << T::entries << std::endl;
+    std::cout << "Leaf ";
+  }
+  else if (level == 0)
+  {
+    std::cout << "Root ";
   }
   else
   {
-    if (level == 0)
-    {
-      std::cout << "Root entries: ";
-    }
-    else
-    {
-      std::cout << "Node entries: ";
-    }
-    std::cout << T::entries << std::endl;
+    std::cout << "Node ";
+  }
+
+  std::cout << "entries: "
+    << T::entries 
+    << "  " << (void*)T::original()
+    << std::endl;
+
+  if constexpr (!T::is_leaf)
+  {
     print_tree_shape<typename T::SubT>(level + 1);
   }
 }
