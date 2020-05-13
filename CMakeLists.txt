@@ -156,6 +156,8 @@ endif()
 # in containing Cmake file.
 if(NOT DEFINED SNMALLOC_ONLY_HEADER_LIBRARY)
 
+  set (POSITION_INDEPENDENT_CODE On)
+
   warnings_high()
 
   if(MSVC)

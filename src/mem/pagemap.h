@@ -98,7 +98,7 @@ namespace snmalloc
     static PagemapV2* cast_to_pagemap(void* pm, const PagemapConfig* c)
     {
       if (
-        (c->version != 2) || (c->is_flat_pagemap == TreeIndexType::is_leaf) ||
+        (c->version != 2) || (c->is_flat_pagemap != TreeIndexType::is_leaf) ||
         (c->sizeof_pointer != sizeof(uintptr_t)) ||
         (c->pagemap_bits != GRANULARITY_BITS) ||
         (c->size_of_entry != sizeof(T)) || (!std::is_integral_v<T>))
