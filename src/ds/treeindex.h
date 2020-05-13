@@ -1,6 +1,7 @@
 #include "../aal/aal.h"
 
 #include <atomic>
+#include <array>
 
 namespace snmalloc
 {
@@ -129,7 +130,7 @@ namespace snmalloc
       }
     };
 
-    constexpr TreeIndex() noexcept {}
+    constexpr TreeIndex() noexcept : array() {}
 
     /// Get element at this index.
     T get(size_t index)
@@ -215,6 +216,6 @@ namespace snmalloc
     /**
      *  Data stored for this level of the tree.
      */
-    std::atomic<Entries> array[entries];
+    std::array<std::atomic<Entries>, entries> array;
   };
 }
