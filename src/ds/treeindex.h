@@ -28,13 +28,14 @@ namespace snmalloc
       (block_size_template == 0) == (alloc_block == nullptr),
       "Must set alloc_block and block_size_template parameter");
 
-    static_assert(
-      block_size >= sizeof(uintptr_t) * 2,
-      "Block must contain at least two pointers.");
     static_assert(block_size >= sizeof(T), "Block must contain at least one T");
 
   public:
     static constexpr bool is_leaf = (total_entries * sizeof(T)) <= block_size;
+
+    static_assert(
+      (block_size >= sizeof(uintptr_t) * 2) || is_leaf,
+      "Block must contain at least two pointers.");
 
     /**
      * Calculate the entries that are stored at this level of the tree.
@@ -68,7 +69,7 @@ namespace snmalloc
      */
     using SubT = std::conditional_t<
       is_leaf,
-      void*,
+      TreeIndex<T, 1, nullptr, 0>,
       TreeIndex<T, sub_entries, alloc_block, block_size>>;
 
     /**
@@ -77,56 +78,42 @@ namespace snmalloc
      */
     struct Ptr
     {
-      SubT* value;
+      typename SubT::ArrayT* value;
 
       constexpr Ptr() noexcept : value(is_leaf ? nullptr : original()) {}
 
-      Ptr(SubT* v) noexcept : value(v) {}
+      Ptr(typename SubT::ArrayT* v) noexcept : value(v) {}
     };
 
     // Type of entries for this level of the tree
     using Entries = std::conditional_t<is_leaf, T, Ptr>;
+    using ArrayT = std::array<std::atomic<Entries>, entries>;
 
-#if !defined(_MSC_VER) || defined(__clang__)
-    // The address used for default address for this level in the tree.
-    inline static SubT original_block{};
-#endif
+    inline static typename SubT::ArrayT original_block{};
 
-    constexpr static SubT* original()
+    constexpr static typename SubT::ArrayT* original()
     {
-#if defined(_MSC_VER) && !defined(__clang__)
-      // The address used for default address for this level in the tree.
-      // MSVC does not support the `inline static` of the self type.
-      constexpr static SubT original_block{};
-#endif
       if constexpr (is_leaf)
       {
         return nullptr;
       }
       else
       {
-        return const_cast<SubT*>(&original_block);
+        return const_cast<typename SubT::ArrayT*>(&original_block);
       }
     };
 
-#if !defined(_MSC_VER) || defined(__clang__)
     // The address used for the lock at for this level in the tree.
-    inline static SubT lock_block{};
-#endif
-    constexpr static SubT* lock()
+    inline static typename SubT::ArrayT lock_block{};
+    constexpr static typename SubT::ArrayT* lock()
     {
-#if defined(_MSC_VER) && !defined(__clang__)
-      // The address used for the lock at for this level in the tree.
-      // MSVC does not support the `inline static` of the self type.
-      constexpr static SubT lock_block{};
-#endif
       if constexpr (is_leaf)
       {
         return nullptr;
       }
       else
       {
-        return const_cast<SubT*>(&lock_block);
+        return const_cast<typename SubT::ArrayT*>(&lock_block);
       }
     };
 
@@ -135,21 +122,32 @@ namespace snmalloc
     /// Get element at this index.
     T get(size_t index)
     {
+      return get(array, index);
+    }
+
+    static T get(ArrayT& array, size_t index)
+    {
       if constexpr (is_leaf)
       {
         return array[index].load(std::memory_order_relaxed);
       }
       else
       {
-        return (array[index / sub_entries]
-                  .load(std::memory_order_relaxed)
-                  .value)
-          ->get(index % sub_entries);
+        typename SubT::ArrayT* sub_array = 
+          array[index / sub_entries]
+          .load(std::memory_order_relaxed)
+          .value;
+        return SubT::get(*sub_array, index % sub_entries);
       }
     }
 
     /// Set element at this index.
     void set(size_t index, T v)
+    {
+      set(array, index, v);
+    }
+
+    static void set(ArrayT& array, size_t index, T v)
     {
       if constexpr (is_leaf)
       {
@@ -161,10 +159,10 @@ namespace snmalloc
           array[index / sub_entries].load(std::memory_order_relaxed).value;
         if ((next != original()) && (next != lock()))
         {
-          next->set(index % sub_entries, v);
+          SubT::set(*next, index % sub_entries, v);
           return;
         }
-        set_slow(index, v);
+        set_slow(array, index, v);
       }
     }
 
@@ -174,6 +172,11 @@ namespace snmalloc
      * for it.
      */
     std::atomic<T>* get_addr(size_t index)
+    {
+      return get_addr(array, index);
+    }
+
+    static std::atomic<T>* get_addr(ArrayT& array, size_t index)
     {
       if constexpr (is_leaf)
       {
@@ -188,7 +191,7 @@ namespace snmalloc
           // Allocate new TreeIndex
           void* new_block = alloc_block();
           // Initialise the block
-          auto new_block_typed = new (new_block) SubT();
+          auto new_block_typed = new (new_block) typename SubT::ArrayT();
           // Unlock TreeIndex
           array[index / sub_entries].store(
             Ptr(new_block_typed), std::memory_order_relaxed);
@@ -200,22 +203,23 @@ namespace snmalloc
           Aal::pause();
         }
 
-        return array[index / sub_entries]
+        auto sub_array = array[index / sub_entries]
           .load(std::memory_order_relaxed)
-          .value->get_addr(index % sub_entries);
+          .value;
+        return SubT::get_addr(*sub_array, index % sub_entries);
       }
     }
 
   private:
-    void set_slow(size_t index, T v)
+    static void set_slow(ArrayT& array, size_t index, T v)
     {
-      auto p = get_addr(index);
+      auto p = get_addr(array, index);
       p->store(v, std::memory_order_relaxed);
     }
 
     /**
      *  Data stored for this level of the tree.
      */
-    std::array<std::atomic<Entries>, entries> array;
+    ArrayT array;
   };
 }
