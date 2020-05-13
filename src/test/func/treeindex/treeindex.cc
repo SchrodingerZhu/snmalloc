@@ -14,7 +14,7 @@ void* alloc_block_4bit()
   return malloc(16);
 }
 
-constexpr size_t LARGE_RANGE = 1ULL << (snmalloc::bits::is64() ? 24 : 34);
+constexpr size_t LARGE_RANGE = 1ULL << (snmalloc::bits::is64() ? 34 : 24);
 
 constexpr size_t RANGE = 1ULL << 20;
 constexpr size_t SUB_RANGE = 1ULL << 18;
