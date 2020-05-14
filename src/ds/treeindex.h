@@ -135,6 +135,7 @@ namespace snmalloc
       {
         typename SubT::ArrayT* sub_array =
           array[index / sub_entries].load(std::memory_order_relaxed).value;
+        SNMALLOC_ASSERT(sub_array != nullptr);
         return SubT::get(*sub_array, index % sub_entries);
       }
     }
@@ -153,11 +154,12 @@ namespace snmalloc
       }
       else
       {
-        auto next =
+        auto sub_array =
           array[index / sub_entries].load(std::memory_order_relaxed).value;
-        if ((next != original()) && (next != lock()))
+        if ((sub_array != original()) && (sub_array != lock()))
         {
-          SubT::set(*next, index % sub_entries, v);
+          SNMALLOC_ASSERT(sub_array != nullptr);
+          SubT::set(*sub_array, index % sub_entries, v);
           return;
         }
         set_slow(array, index, v);
@@ -203,6 +205,7 @@ namespace snmalloc
 
         auto sub_array =
           array[index / sub_entries].load(std::memory_order_relaxed).value;
+        SNMALLOC_ASSERT(sub_array != nullptr);
         return SubT::get_addr(*sub_array, index % sub_entries);
       }
     }
