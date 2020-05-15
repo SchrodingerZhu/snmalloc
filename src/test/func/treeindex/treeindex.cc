@@ -157,12 +157,14 @@ int main(int argc, char** argv)
 
   setup();
 
+#ifndef __APPLE__
   test(tree1);
   test(tree1_l);
   test(tree1_u64);
   test(tree2);
   test(tree2_l);
   test(tree2_u64);
+#endif // __APPLE__
 
   if constexpr (snmalloc::pal_supports<snmalloc::LazyCommit>)
   {
