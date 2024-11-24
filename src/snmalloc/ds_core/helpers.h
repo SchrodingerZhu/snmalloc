@@ -5,7 +5,6 @@
 #include <array>
 #include <atomic>
 #include <string_view>
-#include <tuple>
 #include <type_traits>
 
 namespace snmalloc
@@ -237,22 +236,22 @@ namespace snmalloc
     size_t insert = 0;
 
     /**
-     * Add argument `i` from the tuple `args` to the output.  This is
-     * implemented recursively because the different tuple elements can have
+     * Add argument `i` from `args` to the output.  This is
+     * implemented recursively because the different elements can have
      * different types and so the code for dispatching will depend on the type
      * at the index.  The compiler will lower this to a jump table in optimised
      * builds.
      */
-    template<size_t I, typename... Args>
-    void add_tuple_arg(size_t i, const std::tuple<Args...>& args)
+    template<size_t I, typename Head, typename... Tail>
+    void add_packed_arg(size_t i, Head&& head, Tail&&... tail)
     {
-      if (i == I)
+      if (i == 0)
       {
-        append(std::get<I>(args));
+        append(std::forward<Head>(head));
       }
       else if constexpr (I != 0)
       {
-        add_tuple_arg<I - 1>(i, args);
+        add_packed_arg<I - 1>(i - 1, std::forward<Tail>(tail)...);
       }
     }
 
@@ -419,12 +418,12 @@ namespace snmalloc
     {
       buffer[SafeLength] = 0;
       size_t arg = 0;
-      auto args_tuple = std::forward_as_tuple(args...);
       for (const char* s = fmt; *s != 0; ++s)
       {
         if (s[0] == '{' && s[1] == '}')
         {
-          add_tuple_arg<sizeof...(Args) - 1>(arg++, args_tuple);
+          add_packed_arg<sizeof...(Args) - 1>(
+            arg++, std::forward<Args>(args)...);
           ++s;
         }
         else
