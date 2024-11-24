@@ -12,6 +12,8 @@ include(CheckIncludeFileCXX)
 include(CheckIPOSupported)
 include(CMakeDependentOption)
 
+set(LLVM_MAIN_SRC_DIR "/home/schrodinger/llvm-project")
+
 # Name chosen for compatibility with CTest.
 option(SNMALLOC_BUILD_TESTING "Build test programs as well as shims" ON)
 
@@ -192,6 +194,10 @@ endfunction()
 # header-only configuration and is used as a dependency for all of the builds
 # that compile anything.
 add_library(snmalloc INTERFACE)
+
+if (LLVM_MAIN_SRC_DIR)
+  target_include_directories(snmalloc INTERFACE ${LLVM_MAIN_SRC_DIR}/libc)
+endif()
 
 if(SNMALLOC_USE_CXX17)
   target_compile_features(snmalloc INTERFACE cxx_std_17)

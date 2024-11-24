@@ -25,7 +25,7 @@ namespace snmalloc
   // Instantiate the allocator with a client meta data provider that uses an
   // atomic size_t to store the reference count.
   using Alloc = snmalloc::LocalAllocator<snmalloc::StandardConfigClientMeta<
-    ArrayClientMetaDataProvider<std::atomic<size_t>>>>;
+    ArrayClientMetaDataProvider<cpp::atomic<size_t>>>>;
 }
 
 #  define SNMALLOC_PROVIDE_OWN_CONFIG

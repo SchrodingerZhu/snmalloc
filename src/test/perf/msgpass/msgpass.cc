@@ -95,9 +95,9 @@ struct params
   FreeListMPSCQ<msgqueue_key, msgqueue_key_tweak>* msgqueue; // [N_QUEUE]
 };
 
-std::atomic<bool> producers_live;
-std::atomic<size_t> queue_gate;
-std::atomic<size_t> messages_outstanding;
+cpp::atomic<bool> producers_live;
+cpp::atomic<size_t> queue_gate;
+cpp::atomic<size_t> messages_outstanding;
 
 freelist::HeadPtr domesticate_nop(freelist::QueuePtr p)
 {

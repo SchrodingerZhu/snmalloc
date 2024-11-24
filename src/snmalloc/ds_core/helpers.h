@@ -1,9 +1,9 @@
 #pragma once
 
 #include "bits.h"
+#include "snmalloc/proxy/atomic.h"
 
 #include <array>
-#include <atomic>
 #include <string_view>
 #include <type_traits>
 
@@ -155,10 +155,10 @@ namespace snmalloc
 
 #ifdef __cpp_lib_atomic_ref
     using Val = T;
-    using Ref = std::atomic_ref<T>;
+    using Ref = cpp::atomic_ref<T>;
 #else
-    using Val = std::atomic<T>;
-    using Ref = std::atomic<T>&;
+    using Val = cpp::atomic<T>;
+    using Ref = cpp::atomic<T>&;
 #endif
     Val v;
 
@@ -170,32 +170,32 @@ namespace snmalloc
     SNMALLOC_FAST_PATH Ref ref()
     {
 #ifdef __cpp_lib_atomic_ref
-      return std::atomic_ref<T>(this->v);
+      return cpp::atomic_ref<T>(this->v);
 #else
       return this->v;
 #endif
     }
 
     SNMALLOC_FAST_PATH T
-    load(std::memory_order mo = std::memory_order_seq_cst) noexcept
+    load(cpp::memory_order mo = cpp::memory_order_seq_cst) noexcept
     {
       return this->ref().load(mo);
     }
 
     SNMALLOC_FAST_PATH void
-    store(T n, std::memory_order mo = std::memory_order_seq_cst) noexcept
+    store(T n, cpp::memory_order mo = cpp::memory_order_seq_cst) noexcept
     {
       return this->ref().store(n, mo);
     }
 
     SNMALLOC_FAST_PATH bool compare_exchange_strong(
-      T& exp, T des, std::memory_order mo = std::memory_order_seq_cst) noexcept
+      T& exp, T des, cpp::memory_order mo = cpp::memory_order_seq_cst) noexcept
     {
       return this->ref().compare_exchange_strong(exp, des, mo);
     }
 
     SNMALLOC_FAST_PATH T
-    exchange(T des, std::memory_order mo = std::memory_order_seq_cst) noexcept
+    exchange(T des, cpp::memory_order mo = cpp::memory_order_seq_cst) noexcept
     {
       return this->ref().exchange(des, mo);
     }
@@ -204,7 +204,7 @@ namespace snmalloc
     SNMALLOC_FAST_PATH
       typename std::enable_if<std::is_integral<Q>::value, Q>::type
       fetch_add(
-        Q arg, std::memory_order mo = std::memory_order_seq_cst) noexcept
+        Q arg, cpp::memory_order mo = cpp::memory_order_seq_cst) noexcept
     {
       return this->ref().fetch_add(arg, mo);
     }

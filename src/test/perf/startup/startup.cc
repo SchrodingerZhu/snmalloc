@@ -17,11 +17,11 @@ template<typename F>
 class ParallelTest
 {
 private:
-  std::atomic<bool> flag = false;
-  std::atomic<size_t> ready = 0;
+  cpp::atomic<bool> flag = false;
+  cpp::atomic<size_t> ready = 0;
   uint64_t start;
   uint64_t end;
-  std::atomic<size_t> complete = 0;
+  cpp::atomic<size_t> complete = 0;
   size_t cores;
   F f;
 

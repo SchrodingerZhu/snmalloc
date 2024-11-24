@@ -17,11 +17,11 @@ template<void f(size_t id)>
 class ParallelTest
 {
 private:
-  std::atomic<bool> flag = false;
-  std::atomic<size_t> ready = 0;
+  cpp::atomic<bool> flag = false;
+  cpp::atomic<size_t> ready = 0;
   uint64_t start;
   uint64_t end;
-  std::atomic<size_t> complete = 0;
+  cpp::atomic<size_t> complete = 0;
 
   size_t cores;
 
@@ -69,7 +69,7 @@ public:
   }
 };
 
-std::atomic<size_t*>* contention;
+cpp::atomic<size_t*>* contention;
 size_t swapsize;
 size_t swapcount;
 
@@ -94,7 +94,7 @@ void test_tasks_f(size_t id)
     }
 
     size_t* out =
-      contention[n % swapsize].exchange(res, std::memory_order_acq_rel);
+      contention[n % swapsize].exchange(res, cpp::memory_order_acq_rel);
 
     if (out != nullptr)
     {
@@ -113,7 +113,7 @@ void test_tasks(size_t num_tasks, size_t count, size_t size)
 
   auto& a = ThreadAlloc::get();
 
-  contention = new std::atomic<size_t*>[size];
+  contention = new cpp::atomic<size_t*>[size];
   xoroshiro::p128r32 r;
 
   for (size_t n = 0; n < size; n++)

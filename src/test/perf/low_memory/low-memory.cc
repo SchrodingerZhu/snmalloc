@@ -49,7 +49,7 @@ public:
   }
 };
 
-std::atomic<uint64_t> global_epoch = 0;
+cpp::atomic<uint64_t> global_epoch = 0;
 
 void advance(PalNotificationObject* unused)
 {
