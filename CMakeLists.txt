@@ -12,7 +12,7 @@ include(CheckIncludeFileCXX)
 include(CheckIPOSupported)
 include(CMakeDependentOption)
 
-set(LLVM_MAIN_SRC_DIR "/home/schrodinger/llvm-project")
+set(LLVM_MAIN_SRC_DIR "/home/schrodingerzy/Documents/llvm-project")
 
 # Name chosen for compatibility with CTest.
 option(SNMALLOC_BUILD_TESTING "Build test programs as well as shims" ON)

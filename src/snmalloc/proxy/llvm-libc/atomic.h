@@ -50,12 +50,12 @@ namespace cpp
     atomic& operator=(const atomic&) = delete;
 
     // atomic load.
-    operator T()
+    operator T() const
     {
       return load();
     }
 
-    T load(memory_order mem_ord = memory_order::SEQ_CST)
+    T load(memory_order mem_ord = memory_order::SEQ_CST) const
     {
       T result;
       __atomic_load(&val, &result, static_cast<int>(mem_ord));
@@ -195,6 +195,17 @@ namespace cpp
     {
       return fetch_sub(T{1});
     }
+
+    bool operator==(const T& rhs) const
+    {
+      return load() == rhs;
+    }
+
+    bool operator!=(const T& rhs) const
+    {
+      return !operator==(rhs);
+    }
+    
   };
 
   using atomic_bool = atomic<bool>;
