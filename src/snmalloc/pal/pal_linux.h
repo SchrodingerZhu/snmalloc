@@ -183,8 +183,8 @@ namespace snmalloc
       // protected routine.
       if (false == syscall_not_working.load(cpp::memory_order_relaxed))
       {
-        auto current = std::begin(buffer);
-        auto target = std::end(buffer);
+        auto current = cpp::begin(buffer);
+        auto target = cpp::end(buffer);
         while (auto length = target - current)
         {
           // Reading data via syscall from system entropy pool.

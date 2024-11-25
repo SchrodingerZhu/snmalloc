@@ -1,3 +1,4 @@
+#include <array>
 #include <iostream>
 #include <snmalloc/snmalloc.h>
 #include <test/opt.h>

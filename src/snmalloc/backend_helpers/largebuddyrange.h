@@ -228,7 +228,7 @@ namespace snmalloc
        * covers the whole range.  Uses template insanity to make this work.
        */
       template<bool exists = MAX_SIZE_BITS != (bits::BITS - 1)>
-      std::enable_if_t<exists>
+      cpp::enable_if_t<exists>
       parent_dealloc_range(capptr::Arena<void> base, size_t size)
       {
         static_assert(

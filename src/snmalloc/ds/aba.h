@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../aal/aal.h"
+#include "snmalloc/proxy/size_t.h"
 
 /**
  * This file contains an abstraction of ABA protection. This API should be
@@ -27,7 +28,7 @@ namespace snmalloc
   class ABA
   {
   public:
-    struct alignas(2 * sizeof(std::size_t)) Linked
+    struct alignas(2 * sizeof(cpp::size_t)) Linked
     {
       T* ptr{nullptr};
       uintptr_t aba{0};
@@ -43,13 +44,13 @@ namespace snmalloc
       sizeof(Linked) == sizeof(Independent),
       "Expecting identical struct sizes in union");
     static_assert(
-      sizeof(Linked) == (2 * sizeof(std::size_t)),
+      sizeof(Linked) == (2 * sizeof(cpp::size_t)),
       "Expecting ABA to be the size of two pointers");
 
   private:
     union
     {
-      alignas(2 * sizeof(std::size_t)) cpp::atomic<Linked> linked;
+      alignas(2 * sizeof(cpp::size_t)) cpp::atomic<Linked> linked;
       Independent independent;
     };
 

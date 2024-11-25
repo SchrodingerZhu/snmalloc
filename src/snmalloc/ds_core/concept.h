@@ -40,7 +40,7 @@ namespace snmalloc
 #  endif
 
   /**
-   * Equivalence mod std::remove_reference
+   * Equivalence mod cpp::remove_reference
    */
   template<typename T, typename U>
   concept ConceptSameModRef =

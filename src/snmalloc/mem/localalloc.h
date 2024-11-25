@@ -21,7 +21,6 @@
 #endif
 
 #include <string.h>
-#include <utility>
 
 namespace snmalloc
 {
@@ -328,8 +327,8 @@ namespace snmalloc
      * if it exists.
      */
     template<typename T>
-    SNMALLOC_FAST_PATH auto call_ensure_init(T*, int)
-      -> decltype(T::ensure_init())
+    SNMALLOC_FAST_PATH auto
+    call_ensure_init(T*, int) -> decltype(T::ensure_init())
     {
       T::ensure_init();
     }
@@ -853,7 +852,7 @@ namespace snmalloc
      * @brief Get the client meta data for the snmalloc allocation covering this
      * pointer.
      */
-    std::add_const_t<typename Config::ClientMeta::DataRef>
+    cpp::add_const_t<typename Config::ClientMeta::DataRef>
     get_client_meta_data_const(void* p)
     {
       const PagemapEntry& entry =

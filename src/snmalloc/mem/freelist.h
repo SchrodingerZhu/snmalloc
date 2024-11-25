@@ -182,7 +182,7 @@ namespace snmalloc
         };
 
         SNMALLOC_NO_UNIQUE_ADDRESS
-        std::conditional_t<mitigations(freelist_backward_edge), Prev, Empty>
+        cpp::conditional_t<mitigations(freelist_backward_edge), Prev, Empty>
           prev{};
 
       public:
@@ -554,7 +554,7 @@ namespace snmalloc
     };
 
     using IterBase =
-      std::conditional_t<mitigations(freelist_backward_edge), Prev, NoPrev>;
+      cpp::conditional_t<mitigations(freelist_backward_edge), Prev, NoPrev>;
 
     /**
      * Used to iterate a free list in object space.
@@ -596,7 +596,7 @@ namespace snmalloc
       };
 
       SNMALLOC_NO_UNIQUE_ADDRESS
-      std::conditional_t<
+      cpp::conditional_t<
         mitigations(freelist_forward_edge) ||
           mitigations(freelist_backward_edge),
         KeyTweak,
@@ -700,11 +700,11 @@ namespace snmalloc
        */
 
       // Pointer to the first element.
-      std::array<void*, LENGTH> head{nullptr};
+      cpp::array<void*, LENGTH> head{nullptr};
       // Pointer to the reference to the last element.
       // In the empty case end[i] == &head[i]
       // This enables branch free enqueuing.
-      std::array<void**, LENGTH> end{nullptr};
+      cpp::array<void**, LENGTH> end{nullptr};
 
       [[nodiscard]] Object::BQueuePtr<BQueue>* cast_end(uint32_t ix) const
       {
@@ -723,7 +723,7 @@ namespace snmalloc
       }
 
       SNMALLOC_NO_UNIQUE_ADDRESS
-      std::array<uint16_t, RANDOM ? 2 : (TRACK_LENGTH ? 1 : 0)> length{};
+      cpp::array<uint16_t, RANDOM ? 2 : (TRACK_LENGTH ? 1 : 0)> length{};
 
     public:
       constexpr Builder() = default;
@@ -774,7 +774,7 @@ namespace snmalloc
        * lists, which will be randomised at the other end.
        */
       template<bool RANDOM_ = RANDOM>
-      std::enable_if_t<!RANDOM_> add(
+      cpp::enable_if_t<!RANDOM_> add(
         Object::BHeadPtr<BView, BQueue> n,
         const FreeListKey& key,
         address_t key_tweak)
@@ -896,14 +896,14 @@ namespace snmalloc
       }
 
       template<bool RANDOM_ = RANDOM>
-      std::enable_if_t<!RANDOM_, size_t> extract_segment_length()
+      cpp::enable_if_t<!RANDOM_, size_t> extract_segment_length()
       {
         static_assert(RANDOM_ == RANDOM, "Don't set SFINAE parameter!");
         return length[0];
       }
 
       template<bool RANDOM_ = RANDOM>
-      std::enable_if_t<
+      cpp::enable_if_t<
         !RANDOM_,
         std::pair<
           Object::BHeadPtr<BView, BQueue>,

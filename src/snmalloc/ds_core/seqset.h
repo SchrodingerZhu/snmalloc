@@ -98,7 +98,7 @@ namespace snmalloc
     SNMALLOC_FAST_PATH bool is_empty()
     {
       static_assert(
-        cpp::is_same_v<Node, decltype(std::declval<T>().node)>,
+        cpp::is_same_v<Node, decltype(cpp::declval<T>().node)>,
         "T->node must be Node for T");
       head.invariant();
       return head.next == &head;

@@ -44,11 +44,11 @@ namespace snmalloc
       typename T,
       SNMALLOC_CONCEPT(capptr::IsBound) B>
     constexpr SNMALLOC_FAST_PATH auto
-    has_domesticate(int) -> std::enable_if_t<
+    has_domesticate(int) -> cpp::enable_if_t<
                            cpp::is_same_v<
                              decltype(Config::capptr_domesticate(
-                               std::declval<typename Config::LocalState*>(),
-                               std::declval<CapPtr<T, B>>())),
+                               cpp::declval<typename Config::LocalState*>(),
+                               cpp::declval<CapPtr<T, B>>())),
                              CapPtr<
                                T,
                                typename B::template with_wildness<

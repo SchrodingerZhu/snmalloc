@@ -4,8 +4,6 @@
 #include "../mem/mem.h"
 #include "snmalloc/proxy/atomic.h"
 
-#include <utility>
-
 namespace snmalloc
 {
   /**
@@ -115,7 +113,7 @@ namespace snmalloc
      */
     template<bool fixed_range_ = fixed_range>
     static SNMALLOC_FAST_PATH
-      std::enable_if_t<fixed_range_, std::pair<address_t, address_t>>
+      cpp::enable_if_t<fixed_range_, std::pair<address_t, address_t>>
       get_bounds()
     {
       static_assert(fixed_range_ == fixed_range, "Don't set SFINAE parameter!");

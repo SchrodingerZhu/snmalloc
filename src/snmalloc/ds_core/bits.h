@@ -7,6 +7,7 @@
 
 #include "defines.h"
 #include "snmalloc/proxy/atomic.h"
+#include "snmalloc/proxy/size_t.h"
 #include "snmalloc/proxy/type_traits.h"
 
 #include <climits>
@@ -95,15 +96,15 @@ namespace snmalloc
       return BITS - index - 1;
 #  endif
 #else
-      if constexpr (cpp::is_same_v<unsigned long, std::size_t>)
+      if constexpr (cpp::is_same_v<unsigned long, cpp::size_t>)
       {
         return static_cast<size_t>(__builtin_clzl(x));
       }
-      else if constexpr (cpp::is_same_v<unsigned long long, std::size_t>)
+      else if constexpr (cpp::is_same_v<unsigned long long, cpp::size_t>)
       {
         return static_cast<size_t>(__builtin_clzll(x));
       }
-      else if constexpr (cpp::is_same_v<unsigned int, std::size_t>)
+      else if constexpr (cpp::is_same_v<unsigned int, cpp::size_t>)
       {
         return static_cast<size_t>(__builtin_clz(x));
       }
@@ -182,15 +183,15 @@ namespace snmalloc
       return _tzcnt_u32(static_cast<unsigned int>(x));
 #  endif
 #else
-      if constexpr (cpp::is_same_v<unsigned long, std::size_t>)
+      if constexpr (cpp::is_same_v<unsigned long, cpp::size_t>)
       {
         return static_cast<size_t>(__builtin_ctzl(x));
       }
-      else if constexpr (cpp::is_same_v<unsigned long long, std::size_t>)
+      else if constexpr (cpp::is_same_v<unsigned long long, cpp::size_t>)
       {
         return static_cast<size_t>(__builtin_ctzll(x));
       }
-      else if constexpr (cpp::is_same_v<unsigned int, std::size_t>)
+      else if constexpr (cpp::is_same_v<unsigned int, cpp::size_t>)
       {
         return static_cast<size_t>(__builtin_ctz(x));
       }
@@ -383,9 +384,9 @@ namespace snmalloc
     }
 
     /**
-     * Implementation of `std::max`
+     * Implementation of `cpp::max`
      *
-     * `std::max` is in `<algorithm>`, so pulls in a lot of unneccessary code
+     * `cpp::max` is in `<algorithm>`, so pulls in a lot of unneccessary code
      * We write our own to reduce the code that potentially needs reviewing.
      */
     template<typename T>

@@ -1,7 +1,6 @@
 #pragma once
-#include <type_traits>
 
 namespace cpp
 {
-  using namespace std;
+  using size_t = __SIZE_TYPE__;
 } // namespace cpp

@@ -16,7 +16,6 @@
 #include <sys/mman.h>
 #include <sys/uio.h>
 #include <unistd.h>
-#include <utility>
 #if __has_include(<sys/random.h>)
 #  include <sys/random.h>
 #endif
@@ -417,8 +416,8 @@ namespace snmalloc
       auto fd = open("/dev/urandom", flags, 0);
       if (fd > 0)
       {
-        auto current = std::begin(buffer);
-        auto target = std::end(buffer);
+        auto current = cpp::begin(buffer);
+        auto target = cpp::end(buffer);
         while (auto length = static_cast<size_t>(target - current))
         {
           ret = read(fd, current, length);

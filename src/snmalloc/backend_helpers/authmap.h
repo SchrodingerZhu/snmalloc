@@ -70,7 +70,7 @@ namespace snmalloc
    * Pick between the two above implementations based on StrictProvenance
    */
   template<typename CA>
-  using DefaultAuthmap = std::conditional_t<
+  using DefaultAuthmap = cpp::conditional_t<
     aal_supports<StrictProvenance>,
     BasicAuthmap<CA>,
     DummyAuthmap>;
