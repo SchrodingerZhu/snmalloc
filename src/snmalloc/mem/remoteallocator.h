@@ -2,7 +2,7 @@
 
 #include "freelist_queue.h"
 
-#include <new>
+#include "snmalloc/proxy/new.h"
 
 namespace snmalloc
 {
@@ -43,7 +43,7 @@ namespace snmalloc
     static auto emplace_in_alloc(capptr::Alloc<void> alloc)
     {
       return CapPtr<BatchedRemoteMessage, capptr::bounds::Alloc>::unsafe_from(
-        new (alloc.unsafe_ptr()) BatchedRemoteMessage());
+        new (alloc.unsafe_ptr(), inplace_token) BatchedRemoteMessage());
     }
 
     static auto mk_from_freelist_builder(
@@ -67,7 +67,7 @@ namespace snmalloc
       auto last_prev = last->prev;
       auto self =
         CapPtr<BatchedRemoteMessage, capptr::bounds::Alloc>::unsafe_from(
-          new (last.unsafe_ptr()) BatchedRemoteMessage());
+          new (last.unsafe_ptr(), inplace_token) BatchedRemoteMessage());
       self->free_ring.prev = last_prev;
 
       // XXX On CHERI, we could do a fair bit better if we had a primitive for
@@ -222,7 +222,7 @@ namespace snmalloc
     static auto emplace_in_alloc(capptr::Alloc<void> alloc)
     {
       return CapPtr<SingletonRemoteMessage, capptr::bounds::Alloc>::unsafe_from(
-        new (alloc.unsafe_ptr()) SingletonRemoteMessage());
+        new (alloc.unsafe_ptr(), inplace_token) SingletonRemoteMessage());
     }
 
     static freelist::HeadPtr

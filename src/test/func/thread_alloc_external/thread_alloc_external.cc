@@ -1,3 +1,4 @@
+#include "snmalloc/proxy/new.h"
 #ifdef SNMALLOC_USE_PTHREAD_DESTRUCTORS
 #  undef SNMALLOC_USE_PTHREAD_DESTRUCTORS
 #endif
@@ -45,7 +46,7 @@ void allocator_thread_init(void)
     aptr = a->alloc(sizeof(snmalloc::Alloc));
   }
   // Initialize the thread-local allocator
-  ThreadAllocExternal::get_inner() = new (aptr) snmalloc::Alloc();
+  ThreadAllocExternal::get_inner() = new (aptr, inplace_token) snmalloc::Alloc();
   ThreadAllocExternal::get().init();
 }
 

@@ -3,7 +3,7 @@
 #include "../ds/ds.h"
 #include "pooled.h"
 
-#include <new>
+#include "snmalloc/proxy/new.h"
 
 namespace snmalloc
 {

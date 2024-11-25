@@ -16,6 +16,8 @@
 #  endif
 #endif
 
+#include <new>
+
 void* operator new(size_t size)
 {
   return snmalloc::libc::malloc(size);
