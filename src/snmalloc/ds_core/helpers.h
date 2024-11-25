@@ -2,10 +2,10 @@
 
 #include "bits.h"
 #include "snmalloc/proxy/atomic.h"
+#include "snmalloc/proxy/string_view.h"
 #include "snmalloc/proxy/type_traits.h"
 
 #include <array>
-#include <string_view>
 
 namespace snmalloc
 {
@@ -271,7 +271,7 @@ namespace snmalloc
     /**
      * Append a string to the buffer.
      */
-    void append(std::string_view sv)
+    void append(cpp::string_view sv)
     {
       for (auto c : sv)
       {

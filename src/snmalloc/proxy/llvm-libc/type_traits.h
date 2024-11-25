@@ -1,8 +1,10 @@
 #pragma once
 
-#include "src/__support/CPP/type_traits.h"
+#ifndef LIBC_NAMESPACE
+#  define LIBC_NAMESPACE __llvm_libc
+#endif
 
-#include <type_traits>
+#include "src/__support/CPP/type_traits.h"
 
 namespace cpp
 {

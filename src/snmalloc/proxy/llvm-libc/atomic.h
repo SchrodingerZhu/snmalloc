@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef LIBC_NAMESPACE
+#  define LIBC_NAMESPACE __llvm_libc
+#endif
 namespace cpp
 {
   enum class memory_order : int

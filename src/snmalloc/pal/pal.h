@@ -159,7 +159,7 @@ namespace snmalloc
    * The following are supported as arguments:
    *
    *  - Characters (`char`), printed verbatim.
-   *  - Strings (anything convertible to `std::string_view`), typically string
+   *  - Strings (anything convertible to `cpp::string_view`), typically string
    *    literals because nothing on this path should be performing heap
    *    allocations.  Printed verbatim.
    *  - Raw pointers (void*), printed as hex strings.
