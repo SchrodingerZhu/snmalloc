@@ -131,7 +131,7 @@ int main()
   message("Grab CoreAlloc from pool for inspection");
   {
     static_assert(
-      std::is_same_v<decltype(alloc.alloc), LocalAllocator<StandardConfig>>);
+      cpp::is_same_v<decltype(alloc.alloc), LocalAllocator<StandardConfig>>);
 
     auto* ca = AllocPool<StandardConfig>::acquire();
 

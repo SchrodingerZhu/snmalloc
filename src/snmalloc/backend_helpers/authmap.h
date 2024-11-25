@@ -31,7 +31,7 @@ namespace snmalloc
   struct BasicAuthmap
   {
     static_assert(
-      std::is_same_v<capptr::Arena<void>, typename ConcreteMap::EntryType>,
+      cpp::is_same_v<capptr::Arena<void>, typename ConcreteMap::EntryType>,
       "BasicAuthmap's ConcreteMap must have capptr::Arena<void> element type!");
 
   private:

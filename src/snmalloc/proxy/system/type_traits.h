@@ -1,5 +1,5 @@
 #pragma once
-#include <type_traits>
+#include "snmalloc/proxy/type_traits.h"
 
 namespace cpp
 {

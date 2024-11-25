@@ -343,7 +343,7 @@ namespace snmalloc
       /* The large buddy allocator always deals in Arena-bounded pointers. */
       using ChunkBounds = capptr::bounds::Arena;
       static_assert(
-        std::is_same_v<typename ParentRange::ChunkBounds, ChunkBounds>);
+        cpp::is_same_v<typename ParentRange::ChunkBounds, ChunkBounds>);
 
       constexpr Type() = default;
 

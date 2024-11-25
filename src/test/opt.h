@@ -1,9 +1,10 @@
 #pragma once
 
+#include "snmalloc/proxy/type_traits.h"
+
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
-#include <type_traits>
 
 namespace opt
 {
@@ -41,7 +42,7 @@ namespace opt
           char* end = nullptr;
           T r;
 
-          if (std::is_unsigned<T>::value)
+          if (cpp::is_unsigned<T>::value)
             r = (T)strtoull(p, &end, 10);
           else
             r = (T)strtoll(p, &end, 10);

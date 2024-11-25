@@ -2,10 +2,10 @@
 
 #include "bits.h"
 #include "snmalloc/proxy/atomic.h"
+#include "snmalloc/proxy/type_traits.h"
 
 #include <array>
 #include <string_view>
-#include <type_traits>
 
 namespace snmalloc
 {
@@ -104,7 +104,7 @@ namespace snmalloc
     template<
       typename Fn,
       typename =
-        std::enable_if_t<!std::is_same_v<std::decay_t<Fn>, function_ref>>>
+        std::enable_if_t<!cpp::is_same_v<std::decay_t<Fn>, function_ref>>>
     function_ref(Fn&& fn)
     {
       data_ = static_cast<void*>(&fn);
@@ -150,7 +150,7 @@ namespace snmalloc
   class TrivialInitAtomic
   {
     static_assert(
-      std::is_trivially_default_constructible_v<T>,
+      cpp::is_trivially_default_constructible_v<T>,
       "TrivialInitAtomic should not attempt to call nontrivial constructors");
 
 #ifdef __cpp_lib_atomic_ref
@@ -202,7 +202,7 @@ namespace snmalloc
 
     template<typename Q>
     SNMALLOC_FAST_PATH
-      typename std::enable_if<std::is_integral<Q>::value, Q>::type
+      typename std::enable_if<cpp::is_integral<Q>::value, Q>::type
       fetch_add(
         Q arg, cpp::memory_order mo = cpp::memory_order_seq_cst) noexcept
     {

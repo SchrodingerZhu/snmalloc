@@ -14,7 +14,7 @@ namespace snmalloc
     cpp::atomic<T*> elements{nullptr};
 
     static_assert(
-      std::is_same<decltype(T::pal_next), cpp::atomic<T*>>::value,
+      cpp::is_same<decltype(T::pal_next), cpp::atomic<T*>>::value,
       "Required pal_next type.");
 
   public:

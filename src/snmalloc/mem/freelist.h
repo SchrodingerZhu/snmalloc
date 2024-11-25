@@ -377,7 +377,7 @@ namespace snmalloc
           "Free Object View must be domesticated, justifying raw pointers");
 
         static_assert(
-          std::is_same_v<
+          cpp::is_same_v<
             typename BQueue::template with_wildness<
               capptr::dimension::Wildness::Tame>,
             BView>,

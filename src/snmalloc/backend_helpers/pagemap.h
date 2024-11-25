@@ -29,11 +29,11 @@ namespace snmalloc
     using Entry = PagemapEntry;
 
     static_assert(
-      std::is_same_v<PagemapEntry, typename ConcreteMap::EntryType>,
+      cpp::is_same_v<PagemapEntry, typename ConcreteMap::EntryType>,
       "BasicPagemap's PagemapEntry and ConcreteMap disagree!");
 
     static_assert(
-      std::is_base_of_v<MetaEntryBase, PagemapEntry>,
+      cpp::is_base_of_v<MetaEntryBase, PagemapEntry>,
       "BasicPagemap's PagemapEntry type is not a MetaEntryBase");
 
     /**
