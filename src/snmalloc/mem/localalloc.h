@@ -20,7 +20,7 @@
 #  include "external_alloc.h"
 #endif
 
-#include <string.h>
+#include "snmalloc/proxy/string.h"
 
 namespace snmalloc
 {
@@ -442,7 +442,7 @@ namespace snmalloc
       void* result = external_alloc::aligned_alloc(
         natural_alignment(size), round_size(size));
       if (zero_mem == YesZero && result != nullptr)
-        memset(result, 0, size);
+        cpp::memset(result, 0, size);
       return result;
 #else
       // Perform the - 1 on size, so that zero wraps around and ends up on

@@ -8,7 +8,7 @@
 #include "pal_consts.h"
 #include "pal_timer_default.h"
 
-#include <cstring>
+#include "snmalloc/proxy/string.h"
 
 namespace snmalloc
 {
@@ -98,7 +98,7 @@ namespace snmalloc
     template<bool page_aligned = false>
     static void zero(void* p, size_t size) noexcept
     {
-      memset(p, 0, size);
+      cpp::memset(p, 0, size);
     }
   };
 } // namespace snmalloc

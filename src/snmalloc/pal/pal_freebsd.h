@@ -81,7 +81,7 @@ namespace snmalloc
       SNMALLOC_ASSERT(is_aligned_block<page_size>(p, size));
 
       if constexpr (DEBUG)
-        memset(p, 0x5a, size);
+        cpp::memset(p, 0x5a, size);
 
       madvise(p, size, MADV_FREE);
 

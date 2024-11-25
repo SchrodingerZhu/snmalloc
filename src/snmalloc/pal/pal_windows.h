@@ -170,7 +170,7 @@ namespace snmalloc
         notify_using<YesZero>(p, size);
       }
       else
-        ::memset(p, 0, size);
+        cpp::memset(p, 0, size);
     }
 
 #  ifdef PLATFORM_HAS_VIRTUALALLOC2

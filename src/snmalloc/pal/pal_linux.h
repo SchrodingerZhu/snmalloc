@@ -120,7 +120,7 @@ namespace snmalloc
       else
 #  endif
       {
-        ::memset(p, 0, size);
+        cpp::memset(p, 0, size);
       }
     }
 
@@ -131,7 +131,7 @@ namespace snmalloc
       // Fill memory so that when we switch the pages back on we don't make
       // assumptions on the content.
       if constexpr (DEBUG)
-        memset(p, 0x5a, size);
+        cpp::memset(p, 0x5a, size);
 
       madvise(p, size, madvise_free_flags);
 

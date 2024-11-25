@@ -11,7 +11,7 @@
 #include <fcntl.h>
 #include <limits.h>
 #include <stdio.h>
-#include <string.h>
+#include "snmalloc/proxy/string.h"
 #include <strings.h>
 #include <sys/mman.h>
 #include <sys/uio.h>
@@ -177,7 +177,7 @@ namespace snmalloc
       auto hold = KeepErrno();
 
       void* nl = const_cast<char*>("\n");
-      struct iovec iov[] = {{const_cast<char*>(str), strlen(str)}, {nl, 1}};
+      struct iovec iov[] = {{const_cast<char*>(str), cpp::strlen(str)}, {nl, 1}};
       UNUSED(writev(STDERR_FILENO, iov, sizeof(iov) / sizeof(struct iovec)));
       UNUSED(fsync(STDERR_FILENO));
     }
@@ -193,7 +193,7 @@ namespace snmalloc
       /// previous bytes in stdout will be flushed
       void* nl = const_cast<char*>("\n");
       struct iovec iov[] = {
-        {nl, 1}, {const_cast<char*>(str), strlen(str)}, {nl, 1}};
+        {nl, 1}, {const_cast<char*>(str), cpp::strlen(str)}, {nl, 1}};
       UNUSED(writev(STDERR_FILENO, iov, sizeof(iov) / sizeof(struct iovec)));
       UNUSED(fsync(STDERR_FILENO));
       print_stack_trace();
@@ -217,7 +217,7 @@ namespace snmalloc
         // Fill memory so that when we switch the pages back on we don't make
         // assumptions on the content.
         if constexpr (DEBUG)
-          memset(p, 0x5a, size);
+          cpp::memset(p, 0x5a, size);
 
         mprotect(p, size, PROT_NONE);
       }

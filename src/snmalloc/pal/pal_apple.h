@@ -145,7 +145,7 @@ namespace snmalloc
       SNMALLOC_ASSERT(is_aligned_block<page_size>(p, size));
 
       if constexpr (DEBUG)
-        memset(p, 0x5a, size);
+        cpp::memset(p, 0x5a, size);
 
       // `MADV_FREE_REUSABLE` can only be applied to writable pages,
       // otherwise it's an error.

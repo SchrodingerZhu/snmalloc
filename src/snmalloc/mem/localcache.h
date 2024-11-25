@@ -5,7 +5,7 @@
 #include "remotecache.h"
 #include "sizeclasstable.h"
 
-#include <string.h>
+#include "snmalloc/proxy/string.h"
 
 namespace snmalloc
 {
