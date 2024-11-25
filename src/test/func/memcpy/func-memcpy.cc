@@ -159,7 +159,7 @@ int main()
   static constexpr size_t min_class_size =
     sizeclass_to_size(size_to_sizeclass(MIN_ALLOC_SIZE));
 
-  std::initializer_list<size_t> sizes = {min_class_size, 1024, 2 * 1024 * 1024};
+  cpp::array<size_t, 3> sizes = {min_class_size, 1024, 2 * 1024 * 1024};
   static_assert(
     MIN_ALLOC_SIZE < 1024,
     "Can't detect overflow except at sizeclass boundaries");

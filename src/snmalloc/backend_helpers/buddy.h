@@ -167,7 +167,7 @@ namespace snmalloc
       {
         if (Rep::equal(Rep::null, addr) || Rep::compare(e, addr))
         {
-          addr = std::exchange(e, addr);
+          addr = cpp::exchange(e, addr);
         }
       }
 

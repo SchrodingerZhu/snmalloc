@@ -906,7 +906,7 @@ namespace snmalloc
       template<bool RANDOM_ = RANDOM>
       cpp::enable_if_t<
         !RANDOM_,
-        std::pair<
+        cpp::pair<
           Object::BHeadPtr<BView, BQueue>,
           Object::BHeadPtr<BView, BQueue>>>
       extract_segment(const FreeListKey& key, address_t key_tweak)

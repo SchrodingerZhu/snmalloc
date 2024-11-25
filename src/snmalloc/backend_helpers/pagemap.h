@@ -113,7 +113,7 @@ namespace snmalloc
      */
     template<bool fixed_range_ = fixed_range>
     static SNMALLOC_FAST_PATH
-      cpp::enable_if_t<fixed_range_, std::pair<address_t, address_t>>
+      cpp::enable_if_t<fixed_range_, cpp::pair<address_t, address_t>>
       get_bounds()
     {
       static_assert(fixed_range_ == fixed_range, "Don't set SFINAE parameter!");

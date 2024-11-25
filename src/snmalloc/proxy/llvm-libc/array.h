@@ -143,4 +143,8 @@ namespace cpp
     return array + N;
   }
 
+  // deduction guide
+  template<class T, __SIZE_TYPE__ N>
+  array(T (&)[N]) -> array<T, N>;
+
 } // namespace cpp

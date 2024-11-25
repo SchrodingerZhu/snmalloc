@@ -6,7 +6,7 @@
 #  include "snmalloc/proxy/size_t.h"
 
 #  include <cstdint>
-#  include <utility>
+#  include "snmalloc/proxy/utility.h"
 
 namespace snmalloc
 {

@@ -3,7 +3,7 @@
 #include "snmalloc/proxy/array.h"
 #include "snmalloc/proxy/type_traits.h"
 
-#include <cstddef>
+#include "snmalloc/proxy/cstddef.h"
 #include <cstdint>
 
 namespace snmalloc

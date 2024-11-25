@@ -182,7 +182,7 @@ extern "C"
       return allocm_err_not_moved;
     }
 
-    if (std::numeric_limits<size_t>::max() - size > extra)
+    if (cpp::numeric_limits<size_t>::max() - size > extra)
     {
       alloc_size = f.aligned_size(size + extra);
     }

@@ -4,8 +4,7 @@
 #  include "pal_consts.h"
 #  include "pal_ds.h"
 #  include "snmalloc/proxy/size_t.h"
-
-#  include <utility>
+#  include "snmalloc/proxy/utility.h"
 
 namespace snmalloc
 {

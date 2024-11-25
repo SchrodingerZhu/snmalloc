@@ -288,7 +288,7 @@ namespace
   {
     START_TEST("allocm out-of-memory behaviour");
     void* ptr = nullptr;
-    int ret = Allocm(&ptr, nullptr, std::numeric_limits<size_t>::max() / 2, 0);
+    int ret = Allocm(&ptr, nullptr, cpp::numeric_limits<size_t>::max() / 2, 0);
     EXPECT(
       (ptr == nullptr) && (ret == OUR_ALLOCM_ERR_OOM),
       "Expected massive allocation to fail with out of memory ({}), received "

@@ -1,8 +1,7 @@
 #pragma once
 
-#include <cstddef>
-#include <limits>
-
+#include "snmalloc/proxy/cstddef.h"
+#include "snmalloc/proxy/limits.h"
 // #define USE_LZCNT
 
 #include "defines.h"

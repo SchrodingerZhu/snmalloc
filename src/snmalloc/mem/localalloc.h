@@ -888,7 +888,7 @@ namespace snmalloc
       return snmalloc::remaining_bytes(sizeclass, p);
 #else
       return reinterpret_cast<size_t>(
-        std::numeric_limits<decltype(p)>::max() - p);
+        cpp::numeric_limits<decltype(p)>::max() - p);
 #endif
     }
 

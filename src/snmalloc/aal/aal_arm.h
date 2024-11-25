@@ -12,7 +12,7 @@
 #  endif
 #endif
 
-#include <cstddef>
+#include "snmalloc/proxy/cstddef.h"
 
 namespace snmalloc
 {
