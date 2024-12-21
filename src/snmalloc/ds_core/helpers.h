@@ -5,7 +5,7 @@
 #include "snmalloc/proxy/type_traits.h"
 
 #include <array>
-#include <cstddef>
+#include <stddef.h>
 
 namespace snmalloc
 {

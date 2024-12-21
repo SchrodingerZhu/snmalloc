@@ -37,7 +37,7 @@
 #include "entropy.h"
 #include "snmalloc/proxy/new.h"
 
-#include <cstdint>
+#include <stdint.h>
 
 namespace snmalloc
 {
