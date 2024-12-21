@@ -24,7 +24,8 @@ namespace snmalloc
     constexpr DebugFlagWord() = default;
 
     template<typename... Args>
-    constexpr DebugFlagWord(Args&&... args) : flag(std::forward<Args>(args)...)
+    constexpr DebugFlagWord(Args&&... args)
+    : flag(proxy::forward<Args>(args)...)
     {}
 
     /**
@@ -87,7 +88,7 @@ namespace snmalloc
 
     template<typename... Args>
     constexpr ReleaseFlagWord(Args&&... args)
-    : flag(std::forward<Args>(args)...)
+    : flag(proxy::forward<Args>(args)...)
     {}
 
     void set_owner() {}

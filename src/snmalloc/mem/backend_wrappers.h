@@ -47,8 +47,8 @@ namespace snmalloc
       -> proxy::enable_if_t<
         proxy::is_same_v<
           decltype(Config::capptr_domesticate(
-            std::declval<typename Config::LocalState*>(),
-            std::declval<CapPtr<T, B>>())),
+            proxy::declval<typename Config::LocalState*>(),
+            proxy::declval<CapPtr<T, B>>())),
           CapPtr<
             T,
             typename B::template with_wildness<

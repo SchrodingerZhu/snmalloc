@@ -6,6 +6,8 @@
 #if defined(SNMALLOC_BACKTRACE_HEADER)
 #  include SNMALLOC_BACKTRACE_HEADER
 #endif
+#include "snmalloc/proxy/utility.h"
+
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
@@ -16,7 +18,6 @@
 #include <sys/mman.h>
 #include <sys/uio.h>
 #include <unistd.h>
-#include <utility>
 
 #if __has_include(<sys/random.h>)
 #  include <sys/random.h>

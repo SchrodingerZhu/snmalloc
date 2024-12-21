@@ -3,8 +3,7 @@
 #include "../ds/ds.h"
 #include "../mem/mem.h"
 #include "snmalloc/proxy/atomic.h"
-
-#include <utility>
+#include "snmalloc/proxy/utility.h"
 
 namespace snmalloc
 {
@@ -115,7 +114,7 @@ namespace snmalloc
      */
     template<bool fixed_range_ = fixed_range>
     static SNMALLOC_FAST_PATH
-      proxy::enable_if_t<fixed_range_, std::pair<address_t, address_t>>
+      proxy::enable_if_t<fixed_range_, proxy::Pair<address_t, address_t>>
       get_bounds()
     {
       static_assert(fixed_range_ == fixed_range, "Don't set SFINAE parameter!");

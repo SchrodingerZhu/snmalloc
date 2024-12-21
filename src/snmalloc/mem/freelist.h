@@ -906,7 +906,7 @@ namespace snmalloc
       template<bool RANDOM_ = RANDOM>
       proxy::enable_if_t<
         !RANDOM_,
-        std::pair<
+        proxy::Pair<
           Object::BHeadPtr<BView, BQueue>,
           Object::BHeadPtr<BView, BQueue>>>
       extract_segment(const FreeListKey& key, address_t key_tweak)

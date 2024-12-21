@@ -21,8 +21,9 @@
 #  include "external_alloc.h"
 #endif
 
+#include "snmalloc/proxy/utility.h"
+
 #include <string.h>
-#include <utility>
 
 namespace snmalloc
 {
