@@ -42,6 +42,15 @@ namespace snmalloc
       bool is_right;
     };
 
+    class RBPath
+    {
+      friend class RBTree;
+
+      K parent{Rep::null};
+      K curr{Rep::null};
+      bool dir{Left};
+    };
+
     static constexpr bool use_checks = run_checks;
 
     H root_ref()
@@ -366,30 +375,8 @@ namespace snmalloc
       }
     }
 
-  public:
-    constexpr RBTree() = default;
-
-    bool is_empty()
+    void insert_known_absent(K value, K parent_node, bool dir)
     {
-      return is_null(get_root());
-    }
-
-    bool insert_elem(K value)
-    {
-      K parent_node = Rep::null;
-      K cursor = get_root();
-      bool dir = Left;
-
-      while (!is_null(cursor))
-      {
-        parent_node = cursor;
-        if (Rep::equal(cursor, value))
-          return false;
-
-        dir = Rep::compare(cursor, value) ? Left : Right;
-        cursor = child(cursor, dir);
-      }
-
       set_parent(value, parent_node);
       set_child(value, Left, Rep::null);
       set_child(value, Right, Rep::null);
@@ -398,7 +385,7 @@ namespace snmalloc
       if (is_null(parent_node))
       {
         set_root(value);
-        return true;
+        return;
       }
 
       set_child(parent_node, dir, value);
@@ -451,27 +438,32 @@ namespace snmalloc
           toggle_rank_diff_2(dst_right, Left);
         break;
       }
-
-      return true;
     }
 
-    template<typename Pred>
-    bool remove_elem_if(K value, Pred pred)
+  public:
+    constexpr RBTree() = default;
+
+    bool is_empty()
     {
-      K node = find_node(value);
-      if (is_null(node))
-        return false;
+      return is_null(get_root());
+    }
 
-      if (!pred())
+    bool insert_elem(K value)
+    {
+      auto path = get_root_path();
+      if (find(path, value))
         return false;
-
-      erase_node(node);
+      insert_path(path, value);
       return true;
     }
 
     bool remove_elem(K value)
     {
-      return remove_elem_if(value, []() { return true; });
+      auto path = get_root_path();
+      if (!find(path, value))
+        return false;
+      remove_path(path);
+      return true;
     }
 
     K remove_min()
@@ -485,6 +477,56 @@ namespace snmalloc
 
       erase_node(cursor);
       return cursor;
+    }
+
+    bool find(RBPath& path, K value)
+    {
+      K parent_node = Rep::null;
+      K cursor = get_root();
+      bool dir = Left;
+
+      while (!is_null(cursor))
+      {
+        if (Rep::equal(cursor, value))
+        {
+          path.parent = parent_node;
+          path.curr = cursor;
+          path.dir = dir;
+          return true;
+        }
+
+        parent_node = cursor;
+        dir = Rep::compare(cursor, value) ? Left : Right;
+        cursor = child(cursor, dir);
+      }
+
+      path.parent = parent_node;
+      path.curr = Rep::null;
+      path.dir = dir;
+      return false;
+    }
+
+    bool remove_path(RBPath& path)
+    {
+      if (is_null(path.curr))
+        return false;
+
+      erase_node(path.curr);
+      return true;
+    }
+
+    void insert_path(RBPath& path, K value)
+    {
+      if constexpr (use_checks)
+        SNMALLOC_ASSERT(is_null(path.curr));
+
+      insert_known_absent(value, path.parent, path.dir);
+      path.curr = value;
+    }
+
+    RBPath get_root_path()
+    {
+      return RBPath{};
     }
   };
 } // namespace snmalloc

@@ -33,6 +33,15 @@ namespace snmalloc
     static constexpr uint8_t ParityMask = 0b1;
     static constexpr bool use_checks = run_checks;
 
+    class RBPath
+    {
+      friend class RBTree;
+
+      K parent{Rep::null};
+      K curr{Rep::null};
+      bool dir{Left};
+    };
+
     H root_ref()
     {
       return H{&root};
@@ -581,6 +590,30 @@ namespace snmalloc
       return Rep::null;
     }
 
+    void insert_known_absent(K value, K parent_node, bool dir)
+    {
+      if (is_null(parent_node))
+      {
+        set_parent(value, Rep::null);
+        set_child(value, Left, Rep::null);
+        set_child(value, Right, Rep::null);
+        set_parity(value, false);
+        set_root(value);
+        return;
+      }
+
+      bool was_leaf =
+        is_null(child(parent_node, Left)) && is_null(child(parent_node, Right));
+      set_child(value, Left, Rep::null);
+      set_child(value, Right, Rep::null);
+      set_parity(value, false);
+      set_child(parent_node, dir, value);
+      set_parent(value, parent_node);
+
+      if (was_leaf)
+        insert_rebalance(value);
+    }
+
   public:
     constexpr RBTree() = default;
 
@@ -591,60 +624,20 @@ namespace snmalloc
 
     bool insert_elem(K value)
     {
-      if (is_null(get_root()))
-      {
-        set_parent(value, Rep::null);
-        set_child(value, Left, Rep::null);
-        set_child(value, Right, Rep::null);
-        set_parity(value, false);
-        set_root(value);
-        return true;
-      }
-
-      K parent_node = get_root();
-      bool was_leaf = false;
-      while (true)
-      {
-        if (Rep::equal(parent_node, value))
-          return false;
-
-        bool dir = Rep::compare(parent_node, value) ? Left : Right;
-        K next = child(parent_node, dir);
-        if (is_null(next))
-        {
-          was_leaf =
-            is_null(child(parent_node, Left)) && is_null(child(parent_node, Right));
-          set_child(value, Left, Rep::null);
-          set_child(value, Right, Rep::null);
-          set_parity(value, false);
-          set_child(parent_node, dir, value);
-          set_parent(value, parent_node);
-          break;
-        }
-        parent_node = next;
-      }
-
-      if (was_leaf)
-        insert_rebalance(value);
-
-      return true;
-    }
-
-    template<typename Pred>
-    bool remove_elem_if(K value, Pred pred)
-    {
-      K node = find_node(value);
-      if (is_null(node))
+      auto path = get_root_path();
+      if (find(path, value))
         return false;
-      if (!pred())
-        return false;
-      erase_node(node);
+      insert_path(path, value);
       return true;
     }
 
     bool remove_elem(K value)
     {
-      return remove_elem_if(value, []() { return true; });
+      auto path = get_root_path();
+      if (!find(path, value))
+        return false;
+      remove_path(path);
+      return true;
     }
 
     K remove_min()
@@ -656,6 +649,53 @@ namespace snmalloc
       K n = minimum_at(r);
       erase_node(n);
       return n;
+    }
+
+    bool find(RBPath& path, K value)
+    {
+      K parent_node = Rep::null;
+      K cursor = get_root();
+      bool dir = Left;
+
+      while (!is_null(cursor))
+      {
+        if (Rep::equal(cursor, value))
+        {
+          path.parent = parent_node;
+          path.curr = cursor;
+          path.dir = dir;
+          return true;
+        }
+        parent_node = cursor;
+        dir = Rep::compare(cursor, value) ? Left : Right;
+        cursor = child(cursor, dir);
+      }
+
+      path.parent = parent_node;
+      path.curr = Rep::null;
+      path.dir = dir;
+      return false;
+    }
+
+    bool remove_path(RBPath& path)
+    {
+      if (is_null(path.curr))
+        return false;
+      erase_node(path.curr);
+      return true;
+    }
+
+    void insert_path(RBPath& path, K value)
+    {
+      if constexpr (use_checks)
+        SNMALLOC_ASSERT(is_null(path.curr));
+      insert_known_absent(value, path.parent, path.dir);
+      path.curr = value;
+    }
+
+    RBPath get_root_path()
+    {
+      return RBPath{};
     }
   };
 } // namespace snmalloc
