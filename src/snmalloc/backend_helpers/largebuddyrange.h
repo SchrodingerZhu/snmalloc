@@ -6,6 +6,10 @@
 #include "empty_range.h"
 #include "range_helpers.h"
 
+#ifndef SNMALLOC_RBTREE_VARIANT
+#  define SNMALLOC_RBTREE_VARIANT 0
+#endif
+
 namespace snmalloc
 {
   /**
@@ -37,13 +41,16 @@ namespace snmalloc
      * a bit that is a valid part of the address of a chunk.
      * @{
      */
-    static constexpr address_t RED_BIT = 1 << 8;
+    static constexpr address_t TAG_BIT = 1 << 8;
+#if SNMALLOC_RBTREE_VARIANT == 0
+    static constexpr address_t RED_BIT = TAG_BIT;
+#endif
 
-    static_assert(RED_BIT < MIN_CHUNK_SIZE);
+    static_assert(TAG_BIT < MIN_CHUNK_SIZE);
     static_assert(MetaEntryBase::is_backend_allowed_value(
-      MetaEntryBase::Word::One, RED_BIT));
+      MetaEntryBase::Word::One, TAG_BIT));
     static_assert(MetaEntryBase::is_backend_allowed_value(
-      MetaEntryBase::Word::Two, RED_BIT));
+      MetaEntryBase::Word::Two, TAG_BIT));
     ///@}
 
     /// The value of a null node, as returned by `get`
@@ -56,7 +63,7 @@ namespace snmalloc
      */
     static void set(Handle ptr, Contents r)
     {
-      ptr = r | (static_cast<address_t>(ptr.get()) & RED_BIT);
+      ptr = r | (static_cast<address_t>(ptr.get()) & TAG_BIT);
     }
 
     /**
@@ -64,7 +71,7 @@ namespace snmalloc
      */
     static Contents get(const Handle ptr)
     {
-      return ptr.get() & ~RED_BIT;
+      return ptr.get() & ~TAG_BIT;
     }
 
     /**
@@ -87,6 +94,7 @@ namespace snmalloc
       return entry.get_backend_word(Pagemap::Entry::Word::Two);
     }
 
+#if SNMALLOC_RBTREE_VARIANT == 0
     static bool is_red(Contents k)
     {
       return (ref(true, k).get() & RED_BIT) == RED_BIT;
@@ -101,6 +109,34 @@ namespace snmalloc
       }
       SNMALLOC_ASSERT(is_red(k) == new_is_red);
     }
+#else
+    static uint8_t get_bits(Contents k)
+    {
+      auto left = (ref(true, k).get() & TAG_BIT) ? 1 : 0;
+#  if SNMALLOC_RBTREE_VARIANT == 1
+      auto right = (ref(false, k).get() & TAG_BIT) ? 2 : 0;
+      return static_cast<uint8_t>(left | right);
+#  else
+      return static_cast<uint8_t>(left);
+#  endif
+    }
+
+    static void set_bits(Contents k, uint8_t bits)
+    {
+      auto left = ref(true, k);
+      if ((bits & 0b01) == 0)
+        left = left.get() & ~TAG_BIT;
+      else
+        left = left.get() | TAG_BIT;
+#  if SNMALLOC_RBTREE_VARIANT == 1
+      auto right = ref(false, k);
+      if ((bits & 0b10) == 0)
+        right = right.get() & ~TAG_BIT;
+      else
+        right = right.get() | TAG_BIT;
+#  endif
+    }
+#endif
 
     static Contents offset(Contents k, size_t size)
     {

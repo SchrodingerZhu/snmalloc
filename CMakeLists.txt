@@ -75,6 +75,8 @@ endif()
 
 set(SNMALLOC_MIN_ALLOC_SIZE "" CACHE STRING "Minimum allocation bytes (power of 2)")
 set(SNMALLOC_MIN_ALLOC_STEP_SIZE "" CACHE STRING "Minimum allocation step (power of 2)")
+set(SNMALLOC_RBTREE_VARIANT "0" CACHE STRING "Tree backend: 0=redblack, 1=wavl-2bit, 2=wavl-1bit-parity")
+set_property(CACHE SNMALLOC_RBTREE_VARIANT PROPERTY STRINGS 0 1 2)
 
 set(SNMALLOC_PAGESIZE "" CACHE STRING "Page size in bytes")
 
@@ -350,6 +352,7 @@ if (SNMALLOC_NO_REALLOCARR)
 endif()
 add_as_define_value(SNMALLOC_MIN_ALLOC_SIZE)
 add_as_define_value(SNMALLOC_MIN_ALLOC_STEP_SIZE)
+add_as_define_value(SNMALLOC_RBTREE_VARIANT)
 add_as_define_value(SNMALLOC_DEALLOC_BATCH_RING_ASSOC)
 add_as_define_value(SNMALLOC_DEALLOC_BATCH_RING_SET_BITS)
 

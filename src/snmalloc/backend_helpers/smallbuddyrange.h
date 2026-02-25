@@ -4,6 +4,10 @@
 #include "empty_range.h"
 #include "range_helpers.h"
 
+#ifndef SNMALLOC_RBTREE_VARIANT
+#  define SNMALLOC_RBTREE_VARIANT 0
+#endif
+
 namespace snmalloc
 {
   /**
@@ -57,6 +61,7 @@ namespace snmalloc
       return &r->right;
     }
 
+#if SNMALLOC_RBTREE_VARIANT == 0
     static bool is_red(Contents k)
     {
       if (k == nullptr)
@@ -87,6 +92,41 @@ namespace snmalloc
         SNMALLOC_ASSERT(is_red(k) == new_is_red);
       }
     }
+#else
+    static uint8_t get_bits(Contents k)
+    {
+      if (k == nullptr)
+        return 0;
+      auto left = static_cast<uint8_t>(address_cast(*ref(true, k)) & MASK) != 0 ? 1 : 0;
+#  if SNMALLOC_RBTREE_VARIANT == 1
+      auto right =
+        static_cast<uint8_t>(address_cast(*ref(false, k)) & MASK) != 0 ? 2 : 0;
+      return static_cast<uint8_t>(left | right);
+#  else
+      return static_cast<uint8_t>(left);
+#  endif
+    }
+
+    static void set_bits(Contents k, uint8_t bits)
+    {
+      if (k == nullptr)
+        return;
+      auto l = ref(true, k);
+      auto l_addr = pointer_align_down<2, FreeChunk<bounds>>((*l).as_void());
+      if ((bits & 0b01) != 0)
+        *l = pointer_offset(l_addr, MASK).template as_static<FreeChunk<bounds>>();
+      else
+        *l = l_addr;
+#  if SNMALLOC_RBTREE_VARIANT == 1
+      auto r = ref(false, k);
+      auto r_addr = pointer_align_down<2, FreeChunk<bounds>>((*r).as_void());
+      if ((bits & 0b10) != 0)
+        *r = pointer_offset(r_addr, MASK).template as_static<FreeChunk<bounds>>();
+      else
+        *r = r_addr;
+#  endif
+    }
+#endif
 
     static Contents offset(Contents k, size_t size)
     {

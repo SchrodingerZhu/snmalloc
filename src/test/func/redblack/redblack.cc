@@ -10,6 +10,10 @@
 #ifndef SNMALLOC_TRACING
 #  define SNMALLOC_TRACING
 #endif
+
+#ifndef SNMALLOC_RBTREE_VARIANT
+#  define SNMALLOC_RBTREE_VARIANT 0
+#endif
 // Redblack tree needs some libraries with trace enabled.
 #include "snmalloc/snmalloc.h"
 
@@ -20,6 +24,8 @@ struct NodeRef
   // to the stored value ensures that we have some abstraction over
   // the representation.
   static constexpr size_t offset = 10000;
+  static constexpr size_t shift = 1;
+  static constexpr size_t mask = 0b01;
 
   size_t* ptr;
 
@@ -44,12 +50,12 @@ struct NodeRef
 
   void set(uint16_t val)
   {
-    *ptr = ((size_t(val) + offset) << 1) + (*ptr & 1);
+    *ptr = ((size_t(val) + offset) << shift) + (*ptr & mask);
   }
 
   explicit operator uint16_t()
   {
-    return uint16_t((*ptr >> 1) - offset);
+    return uint16_t((*ptr >> shift) - offset);
   }
 
   explicit operator size_t*()
@@ -75,7 +81,7 @@ public:
   using key = uint16_t;
 
   static constexpr key null = 0;
-  static constexpr size_t root{NodeRef::offset << 1};
+  static constexpr size_t root{NodeRef::offset << NodeRef::shift};
 
   using Handle = NodeRef;
   using Contents = uint16_t;
@@ -98,6 +104,7 @@ public:
       return {&array[k].right};
   }
 
+#if SNMALLOC_RBTREE_VARIANT == 0
   static bool is_red(key k)
   {
     return (array[k].left & 1) == 1;
@@ -108,6 +115,25 @@ public:
     if (new_is_red != is_red(k))
       array[k].left ^= 1;
   }
+#else
+  static uint8_t get_bits(key k)
+  {
+#  if SNMALLOC_RBTREE_VARIANT == 1
+    return static_cast<uint8_t>((array[k].left & 1) + ((array[k].right & 1) << 1));
+#  else
+    return static_cast<uint8_t>(array[k].left & 1);
+#  endif
+  }
+
+  static void set_bits(key k, uint8_t bits)
+  {
+    array[k].left = (array[k].left & ~NodeRef::mask) + (bits & 0b01);
+#  if SNMALLOC_RBTREE_VARIANT == 1
+    array[k].right =
+      (array[k].right & ~NodeRef::mask) + ((bits & 0b10) == 0 ? 0 : 1);
+#  endif
+  }
+#endif
 
   static bool compare(key k1, key k2)
   {

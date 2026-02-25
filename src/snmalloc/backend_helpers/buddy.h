@@ -81,21 +81,12 @@ namespace snmalloc
         }
       }
 
-      auto path = entries[idx].tree.get_root_path();
-      bool contains_buddy = entries[idx].tree.find(path, buddy);
-
-      if (!contains_buddy)
-        return false;
-
       // Only check if we can consolidate after we know the buddy is in
       // the buddy allocator.  This is required to prevent possible segfaults
       // from looking at the buddies meta-data, which we only know exists
-      // once we have found it in the red-black tree.
-      if (!Rep::can_consolidate(addr, size))
-        return false;
-
-      entries[idx].tree.remove_path(path);
-      return true;
+      // once we have found it in the tree.
+      return entries[idx].tree.remove_elem_if(
+        buddy, [addr, size]() { return Rep::can_consolidate(addr, size); });
     }
 
   public:
@@ -143,9 +134,7 @@ namespace snmalloc
         }
       }
 
-      auto path = entries[idx].tree.get_root_path();
-      entries[idx].tree.find(path, addr);
-      entries[idx].tree.insert_path(path, addr);
+      entries[idx].tree.insert_elem(addr);
       invariant();
       return Rep::null;
     }

@@ -755,7 +755,8 @@ namespace snmalloc
       return result;
     }
 
-    bool remove_elem(K value)
+    template<typename Pred>
+    bool remove_elem_if(K value, Pred pred)
     {
       if (is_empty())
         return false;
@@ -764,8 +765,16 @@ namespace snmalloc
       if (!find(path, value))
         return false;
 
+      if (!pred())
+        return false;
+
       remove_path(path);
       return true;
+    }
+
+    bool remove_elem(K value)
+    {
+      return remove_elem_if(value, []() { return true; });
     }
 
     bool insert_elem(K value)
